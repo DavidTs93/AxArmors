@@ -1,0 +1,14 @@
+name: AxArmors
+main: me.DMan16.AxArmors.AxArmors
+depend: [AxUtils]
+version: 1.0
+description: Armors for Aldreda
+author: DMan16
+api-version: 1.16
+
+commands:
+  armor:
+    permission: aldreda.command.armor
+permissions:
+  aldreda.command.armor:
+    default: op
