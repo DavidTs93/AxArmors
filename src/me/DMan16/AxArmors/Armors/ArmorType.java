@@ -6,6 +6,7 @@ import org.bukkit.Material;
 
 import me.Aldreda.AxUtils.Enums.Tags;
 import me.Aldreda.AxUtils.Utils.ReflectionUtils;
+import me.DMan16.AxItems.Items.AxItem;
 
 public enum ArmorType {
 	BRONZE("LEATHER",
@@ -235,6 +236,10 @@ public enum ArmorType {
 	
 	public String getRepairKey() {
 		return repairItemKey;
+	}
+	
+	public AxItem getRepairItem() {
+		return AxItem.getAxItem(repairItemKey);
 	}
 	
 	public String getTranslatableName(ArmorSlot slot) {

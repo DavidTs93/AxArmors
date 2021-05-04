@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,14 +12,8 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.Aldreda.AxUtils.Items.AxItem;
-import me.Aldreda.AxUtils.Utils.Utils;
 import me.DMan16.AxArmors.AxArmors;
-import me.DMan16.AxArmors.Armors.ArmorSlot;
-import me.DMan16.AxArmors.Armors.ArmorType;
 import me.DMan16.AxArmors.Armors.AxArmor;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
 
 public class CommandListener implements CommandExecutor,TabCompleter {
 	public CommandListener() {
@@ -32,7 +25,7 @@ public class CommandListener implements CommandExecutor,TabCompleter {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) return true;
 		Player player = (Player) sender;
-		if (args[0].equalsIgnoreCase("give")) { 
+		/*if (args[0].equalsIgnoreCase("give")) { 
 			try{
 				Player playerGive = Utils.getOnlinePlayer(args[1]);
 				ArmorType type = ArmorType.getByName(args[2]);
@@ -47,7 +40,7 @@ public class CommandListener implements CommandExecutor,TabCompleter {
 				player.sendMessage(Component.translatable("commands.give.success.single").args(Component.text(amount),Component.translatable(name),
 						Component.text(playerGive.getName())).hoverEvent(item.asHoverEvent()).decoration(TextDecoration.ITALIC,false));
 			} catch (Exception e) {}
-		} else if (args[0].equalsIgnoreCase("damage")) {
+		} else */if (args[0].equalsIgnoreCase("damage")) {
 			try{
 				int amount = Integer.parseInt(args[1]);
 				ItemStack item = player.getInventory().getItemInMainHand();
@@ -69,9 +62,9 @@ public class CommandListener implements CommandExecutor,TabCompleter {
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		List<String> resultList = new ArrayList<String>();
 		if (args.length == 1) {
-			List<String> base = Arrays.asList("give","damage","repair");
+			List<String> base = Arrays.asList(/*"give",*/"damage","repair");
 			for (String str : base) if (contains(args[0],str)) resultList.add(str);
-		} else if (args[0].equalsIgnoreCase("give")) {
+		}/* else if (args[0].equalsIgnoreCase("give")) {
 			if (args.length == 2) {
 				for (Player player : Bukkit.getServer().getOnlinePlayers()) if (contains(args[1],player.getName())) resultList.add(player.getName());
 			} else if (args.length == 3) {
@@ -79,7 +72,7 @@ public class CommandListener implements CommandExecutor,TabCompleter {
 			} else if (args.length == 4) {
 				for (ArmorSlot slot : ArmorSlot.values()) if (contains(args[3],slot.name())) resultList.add(slot.name().toLowerCase());
 			}
-		}
+		}*/
 		return resultList;
 	}
 	

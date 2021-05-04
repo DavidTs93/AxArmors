@@ -21,9 +21,9 @@ import org.bukkit.persistence.PersistentDataType;
 
 import me.Aldreda.AxUtils.Classes.Pair;
 import me.Aldreda.AxUtils.Enums.Tags;
-import me.Aldreda.AxUtils.Items.AxItem;
-import me.Aldreda.AxUtils.Items.Restrictions;
 import me.Aldreda.AxUtils.Utils.Utils;
+import me.DMan16.AxItems.Items.AxItem;
+import me.DMan16.AxItems.Restrictions.Restrictions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -58,7 +58,7 @@ public class AxArmor extends AxItem {
 				},
 				null,*/
 				Utils.joinLists(Tags.get(type.getMaterial(slot)).stream().map(tag -> tag.name()).collect(Collectors.toList()),
-						Arrays.asList(type.name(),slot.name())).toArray(new String[0]));
+						Arrays.asList("armor",type.name(),slot.name())).toArray(new String[0]));
 		this.type = type;
 		this.defense = type.getDefense(slot);
 		this.toughness = type.getToughness(slot);

@@ -23,13 +23,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.Aldreda.AxUtils.Classes.Listener;
 import me.Aldreda.AxUtils.Events.ArmorEquipEvent;
-import me.Aldreda.AxUtils.Events.ItemRestrictedEvent;
-import me.Aldreda.AxUtils.Items.AxItem;
 import me.Aldreda.AxUtils.Utils.Utils;
 import me.DMan16.AxArmors.AxArmors;
 import me.DMan16.AxArmors.Armors.ArmorSlot;
 import me.DMan16.AxArmors.Armors.ArmorType;
 import me.DMan16.AxArmors.Armors.AxArmor;
+import me.DMan16.AxItems.Items.AxItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -66,7 +65,7 @@ public class ArmorListener extends Listener {
 	}
 	
 	@EventHandler(ignoreCancelled = true)
-	public void disableEquipArmorsEvent(ItemRestrictedEvent event) {
+	public void disableEquipArmorsEvent(me.DMan16.AxItems.Restrictions.ItemRestrictedEvent event) {
 		if (event.isCancelled()) return;
 		AxArmor armor = AxArmor.getAldredaArmor(event.item);
 		if (armor == null || !armor.isBroken()) return;
