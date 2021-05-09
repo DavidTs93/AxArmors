@@ -1,6 +1,6 @@
 name: AxArmors
 main: me.DMan16.AxArmors.AxArmors
-depend: [AxUtils,AxItems]
+depend: [AxUtils,AxItems,AxStats]
 version: 1.0
 description: Armors for Aldreda
 author: DMan16

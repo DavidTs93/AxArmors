@@ -44,13 +44,13 @@ public class CommandListener implements CommandExecutor,TabCompleter {
 			try{
 				int amount = Integer.parseInt(args[1]);
 				ItemStack item = player.getInventory().getItemInMainHand();
-				AxArmor armor = AxArmor.getAldredaArmor(item);
+				AxArmor armor = AxArmor.getAxArmor(item);
 				player.getInventory().setItemInMainHand(armor.damage(amount).item());
 			} catch (Exception e) {}
 		} else if (args[0].equalsIgnoreCase("repair")) {
 			try{
 				ItemStack item = player.getInventory().getItemInMainHand();
-				AxArmor armor = AxArmor.getAldredaArmor(item);
+				AxArmor armor = AxArmor.getAxArmor(item);
 				int amount = args.length > 1 ? Integer.parseInt(args[1]) : armor.maxDurability;
 				player.getInventory().setItemInMainHand(armor.repair(amount).item());
 			} catch (Exception e) {}

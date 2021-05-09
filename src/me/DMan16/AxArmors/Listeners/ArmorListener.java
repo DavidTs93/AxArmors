@@ -45,7 +45,7 @@ public class ArmorListener extends Listener {
 		int dmg = event.getDamage();
 		if (event.isCancelled() || dmg <= 0 || event.getPlayer() == null) return;
 		ItemStack item = event.getItem();
-		AxArmor armor = AxArmor.getAldredaArmor(item);
+		AxArmor armor = AxArmor.getAxArmor(item);
 		if (armor == null) return;
 		event.setCancelled(true);
 		event.setDamage(0);
@@ -67,7 +67,7 @@ public class ArmorListener extends Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void disableEquipArmorsEvent(me.DMan16.AxItems.Restrictions.ItemRestrictedEvent event) {
 		if (event.isCancelled()) return;
-		AxArmor armor = AxArmor.getAldredaArmor(event.item);
+		AxArmor armor = AxArmor.getAxArmor(event.item);
 		if (armor == null || !armor.isBroken()) return;
 		event.setCancelMSG(Component.translatable("item.aldreda.armor.broken_no_equip").color(TextColor.color(NamedTextColor.RED)).decoration(TextDecoration.ITALIC,
 				false));
@@ -79,7 +79,7 @@ public class ArmorListener extends Listener {
 		if (event.isCancelled()) return;
 		ItemStack item = event.getNewArmor();
 		if (Utils.isNull(item) || !ArmorType.isArmor(item.getType())) return;
-		if (AxArmor.getAldredaArmor(item) == null) event.setCancelled(true);
+		if (AxArmor.getAxArmor(item) == null) event.setCancelled(true);
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -88,11 +88,11 @@ public class ArmorListener extends Listener {
 		Player player = (Player) event.getWhoClicked();
 		if (player.getGameMode() != GameMode.CREATIVE) return;
 		ItemStack item = event.getCursor();
-		if (!ArmorType.isArmor(item.getType()) || AxArmor.getAldredaArmor(item) != null) return;
+		if (!ArmorType.isArmor(item.getType()) || AxArmor.getAxArmor(item) != null) return;
 		new BukkitRunnable() {
 			public void run() {
 				try {
-					event.getClickedInventory().setItem(event.getSlot(),AxArmor.getLegalAldredaArmor(item).item());
+					event.getClickedInventory().setItem(event.getSlot(),AxArmor.getLegalAxArmor(item).item());
 				} catch (Exception e) {
 					event.getClickedInventory().setItem(event.getSlot(),null);
 				}
@@ -106,9 +106,9 @@ public class ArmorListener extends Listener {
 		Item drop = event.getItemDrop();
 		ItemStack item = event.getItemDrop().getItemStack();
 		if (Utils.isNull(item)) return;
-		if (ArmorType.isArmor(item.getType()) && AxArmor.getAldredaArmor(item) == null) {
+		if (ArmorType.isArmor(item.getType()) && AxArmor.getAxArmor(item) == null) {
 			try {
-				drop.setItemStack(AxArmor.getLegalAldredaArmor(item).item());
+				drop.setItemStack(AxArmor.getLegalAxArmor(item).item());
 			} catch (Exception e) {
 				drop.remove();
 			}
@@ -123,9 +123,9 @@ public class ArmorListener extends Listener {
 		for (int i = 0; i < event.getLoot().size(); i++) {
 			item = event.getLoot().get(i);
 			if (Utils.isNull(item)) continue;
-			if (ArmorType.isArmor(item.getType()) && AxArmor.getAldredaArmor(item) == null) {
+			if (ArmorType.isArmor(item.getType()) && AxArmor.getAxArmor(item) == null) {
 				try {
-					loot.add(AxArmor.getLegalAldredaArmor(item).item());
+					loot.add(AxArmor.getLegalAxArmor(item).item());
 				} catch (Exception e) {}
 			}
 		}
@@ -158,7 +158,7 @@ public class ArmorListener extends Listener {
 				ItemStack item2 = event.getInventory().getItem(1);
 				ItemStack result = event.getInventory().getItem(2);
 				if (Utils.isNull(result) || (Utils.isNull(item1) && Utils.isNull(item2))) return;
-				AxArmor armor = AxArmor.getAldredaArmor(result);
+				AxArmor armor = AxArmor.getAxArmor(result);
 				if (armor == null) return;
 				if (Utils.isNull(item1) || Utils.isNull(item2)) event.getInventory().setItem(2,armor.item());
 			}
@@ -173,8 +173,8 @@ public class ArmorListener extends Listener {
 			public void run() {
 				ItemStack item1 = event.getInventory().getItem(0);
 				ItemStack result = event.getInventory().getItem(2);
-				AxArmor armor1 = AxArmor.getAldredaArmor(item1);
-				AxArmor armor = AxArmor.getAldredaArmor(result);
+				AxArmor armor1 = AxArmor.getAxArmor(item1);
+				AxArmor armor = AxArmor.getAxArmor(result);
 				if (armor1 == null) return;
 				ItemStack item2 = event.getInventory().getItem(1);
 				if (Utils.isNull(item2)) {
@@ -196,7 +196,7 @@ public class ArmorListener extends Listener {
 		if (event.isCancelled() || event.getInventory().getType() != InventoryType.ANVIL) return;
 		ItemStack item1 = event.getInventory().getItem(0);
 		ItemStack item2 = event.getInventory().getItem(1);
-		AxArmor armor1 = AxArmor.getAldredaArmor(item1);
+		AxArmor armor1 = AxArmor.getAxArmor(item1);
 		if (armor1 == null || Utils.isNull(item2)) return;
 		new BukkitRunnable() {
 			public void run() {

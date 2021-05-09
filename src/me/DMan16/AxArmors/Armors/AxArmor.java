@@ -3,7 +3,6 @@ package me.DMan16.AxArmors.Armors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -12,14 +11,12 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import me.Aldreda.AxUtils.Classes.Pair;
 import me.Aldreda.AxUtils.Enums.Tags;
 import me.Aldreda.AxUtils.Utils.Utils;
 import me.DMan16.AxItems.Items.AxItem;
@@ -29,7 +26,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
-@SuppressWarnings("unchecked")
 public class AxArmor extends AxItem {
 	protected final String translateStatBase = "attribute.name.aldreda.";
 	protected final static NamespacedKey typeKey = Utils.namespacedKey("type");
@@ -50,15 +46,18 @@ public class AxArmor extends AxItem {
 	protected boolean broken;
 	
 	public AxArmor(ArmorType type, ArmorSlot slot) {
-		super(Utils.makeItem(type.getMaterial(slot),Component.translatable(type.getTranslatableName(slot)).decoration(TextDecoration.ITALIC,false),
-				ItemFlag.values()),defaultKey(type,slot),
+		super(Utils.makeItem(type.getMaterial(slot),null,ItemFlag.values()),													// item
+				defaultKey(type,slot),																							// key
+				Component.translatable(type.getTranslatableName(slot)).decoration(TextDecoration.ITALIC,false),					// name
+				null, /* topLore */ null, /* bottomLore */
 				/*(info) -> {
 					info.second().getPlayer().sendMessage(Component.text(Utils.chatColors("&bEquip ")).append(info.first().name().hoverEvent(
 							info.first().item().asHoverEvent())));
 				},
 				null,*/
-				Utils.joinLists(Tags.get(type.getMaterial(slot)).stream().map(tag -> tag.name()).collect(Collectors.toList()),
-						Arrays.asList("armor",type.name(),slot.name())).toArray(new String[0]));
+				Utils.joinLists(Tags.get(type.getMaterial(slot)).stream().map(tag -> tag.name()).collect(Collectors.toList()),Arrays.asList("armor",type.name(),slot.name())),
+				type.getStats(slot)																								// stats
+				);
 		this.type = type;
 		this.defense = type.getDefense(slot);
 		this.toughness = type.getToughness(slot);
@@ -71,7 +70,7 @@ public class AxArmor extends AxItem {
 		this.slot = slot;
 		this.broken = false;
 		PersistentDataContainerSet(typeKey,PersistentDataType.STRING,type.name());
-		updateArmor();
+		if (this.maxDurability <= 0) unbreakable(true);
 	}
 
 	public static String defaultKey(ArmorType type, ArmorSlot slot) {
@@ -85,18 +84,6 @@ public class AxArmor extends AxItem {
 	private int getToughnessBonus() {
 		return toughness;
 	}*/
-	
-	protected int getHealthBonus() {
-		if (stamina == 0) return 0;
-		float mult = 1;
-		return Math.round(stamina * mult);
-	}
-	
-	protected int getStrengthBonus() {
-		if (strength == 0) return 0;
-		float mult = 0.5F;
-		return Math.round(strength * mult);
-	}
 
 	public boolean isBroken() {
 		return broken;
@@ -112,47 +99,14 @@ public class AxArmor extends AxItem {
 		return super.item();
 	}
 	
-	public AxArmor updateArmor() {
-		if (maxDurability == 0) unbreakable(true);
-		return updateName().updateAttributes().updateDurability();
-	}
-	
-	protected AxArmor updateName() {
-		Component name = Component.translatable(type.getTranslatableName(slot)).decoration(TextDecoration.ITALIC,false);
-		name(name);
-		return this;
-	}
-	
-	protected AxArmor updateLore() {
-		List<Component> lore = new ArrayList<Component>();
-		lore.add(Component.empty());
-		if (defense != 0)
-			lore.add(Component.translatable(translateStatBase + "defense",NamedTextColor.AQUA).args(Component.text(defense).color(NamedTextColor.LIGHT_PURPLE)).
-					decoration(TextDecoration.ITALIC,false));
-		if (toughness != 0)
-			lore.add(Component.translatable(translateStatBase + "toughness",NamedTextColor.DARK_GRAY).args(Component.text(toughness).color(NamedTextColor.LIGHT_PURPLE)).
-					decoration(TextDecoration.ITALIC,false));
-		if (stamina != 0)
-			lore.add(Component.translatable(translateStatBase + "stamina",NamedTextColor.YELLOW).args(Component.text(stamina).color(NamedTextColor.LIGHT_PURPLE)).
-					decoration(TextDecoration.ITALIC,false));
-		if (strength != 0)
-			lore.add(Component.translatable(translateStatBase + "strength",NamedTextColor.RED).args(Component.text(strength).color(NamedTextColor.LIGHT_PURPLE)).
-					decoration(TextDecoration.ITALIC,false));
-		if (getEnchantments().entrySet().size() > 0) {
-			lore.add(Component.empty());
-			for (Entry<Enchantment,Integer> ench : getEnchantments().entrySet()) {
-				NamespacedKey key = ench.getKey().getKey();
-				Component comp = Component.translatable("enchantment." + key.getNamespace() + "." + key.getKey());
-				if (ench.getValue() !=  ench.getKey().getStartLevel() || ench.getKey().getStartLevel() !=  ench.getKey().getMaxLevel())
-					comp = comp.append(Component.space()).append(Component.text(Utils.toRoman(ench.getValue())));
-				lore.add(comp.color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC,false));
-			}
-		}
-		lore.add(Component.empty());
+	// !!!
+	@Override
+	protected List<Component> belowBottomLore() {
+		List<Component> belowBottomLore = new ArrayList<Component>();
 		Component durabilityLine;
 		if (maxDurability > 0) {
 			TextColor color;
-			double ratio = (double)maxDurability /durability;
+			double ratio = (double)maxDurability / durability;
 			if (ratio >= 100) color = NamedTextColor.RED;
 			else if (ratio >= 20) color = NamedTextColor.GOLD;
 			else if (ratio >= 2) color = NamedTextColor.YELLOW;
@@ -160,12 +114,11 @@ public class AxArmor extends AxItem {
 			durabilityLine = Component.translatable("item.durability",NamedTextColor.GRAY,Component.text(durability,color),
 					Component.text(maxDurability,NamedTextColor.AQUA)).decoration(TextDecoration.ITALIC,false);
 		} else durabilityLine = Component.translatable("item.unbreakable",NamedTextColor.BLUE).decoration(TextDecoration.ITALIC,false);
-		lore.add(durabilityLine);
-		lore(lore);
-		return this;
+		belowBottomLore.add(durabilityLine);
+		return belowBottomLore;
 	}
 	
-	protected AxArmor updateAttributes() {
+	/*protected AxArmor updateAttribute() {
 		addAttributes(Pair.of(Attribute.GENERIC_MOVEMENT_SPEED, new AttributeModifier(UUID.randomUUID(),attributeKey,0,Operation.ADD_NUMBER,
 				EquipmentSlot.OFF_HAND)));
 		if (stamina != 0) addAttributes(Pair.of(Attribute.GENERIC_MAX_HEALTH, new AttributeModifier(UUID.randomUUID(),attributeKey,getHealthBonus(),
@@ -173,13 +126,13 @@ public class AxArmor extends AxItem {
 		if (strength != 0) addAttributes(Pair.of(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),attributeKey,getStrengthBonus(),
 				Operation.ADD_NUMBER,slot.slot)));
 		return this;
-	}
+	}*/
 	
 	protected AxArmor updateDurability() {
 		durability = Math.max(Math.min(durability,maxDurability),0);
 		if (maxDurability > 0) PersistentDataContainerSet(durabilityKey,PersistentDataType.INTEGER,durability);
 		broken = durability <= 0 && maxDurability > 0;
-		return updateLore();
+		return this;
 	}
 	
 	public AxArmor damage(int amount) {
@@ -209,20 +162,6 @@ public class AxArmor extends AxItem {
 		return this;
 	}
 	
-	@Override
-	public AxArmor addEnchantments(Pair<Enchantment,Integer> ... enchants) {
-		super.addEnchantments(enchants);
-		updateLore();
-		return this;
-	}
-
-	@Override
-	public AxArmor removeEnchantments(Enchantment ... enchants) {
-		super.removeEnchantments(enchants);
-		updateLore();
-		return this;
-	}
-	
 	protected ItemStack brokenArmor() {
 		Component name = name().append(Component.text(" (").append(Component.translatable(ArmorType.translateItemBase +
 				"broken")).append(Component.text(")")).decoration(TextDecoration.ITALIC,false));
@@ -236,10 +175,15 @@ public class AxArmor extends AxItem {
 		return Restrictions.Unequippable.add(item);
 	}
 	
-	public static AxArmor getAldredaArmor(ItemStack item) {
+	@Override
+	protected AxItem update(ItemStack item) {
+		return getAxArmor(item);
+	}
+	
+	public static AxArmor getAxArmor(ItemStack item) {
 		try {
 			if (item.getItemMeta().getPersistentDataContainer().has(brokenKey,PersistentDataType.STRING))
-				return getAldredaArmor((ItemStack) Utils.ObjectFromBase64(item.getItemMeta().getPersistentDataContainer().get(brokenKey,PersistentDataType.STRING)));
+				return getAxArmor((ItemStack) Utils.ObjectFromBase64(item.getItemMeta().getPersistentDataContainer().get(brokenKey,PersistentDataType.STRING)));
 			AxArmor armor = (AxArmor) AxItem.getAxItem(item);
 			if (armor.maxDurability > 0)
 				armor.damage(armor.maxDurability - item.getItemMeta().getPersistentDataContainer().get(durabilityKey,PersistentDataType.INTEGER));
@@ -248,8 +192,8 @@ public class AxArmor extends AxItem {
 		return null;
 	}
 	
-	public static AxArmor getLegalAldredaArmor(ItemStack item) {
-		AxArmor armor = getAldredaArmor(item);
+	public static AxArmor getLegalAxArmor(ItemStack item) {
+		AxArmor armor = getAxArmor(item);
 		if (armor != null) return armor;
 		for (ArmorType type : ArmorType.values()) for (ArmorSlot slot : ArmorSlot.values()) try {
 				if (type.isOriginal() && item.getType().equals(type.getMaterial(slot))) return (AxArmor) AxItem.getAxItem(defaultKey(type,slot));

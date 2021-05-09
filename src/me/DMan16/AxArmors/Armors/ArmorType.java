@@ -1,12 +1,16 @@
 package me.DMan16.AxArmors.Armors;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Material;
 
 import me.Aldreda.AxUtils.Enums.Tags;
 import me.Aldreda.AxUtils.Utils.ReflectionUtils;
 import me.DMan16.AxItems.Items.AxItem;
+import me.DMan16.AxStats.AxStat;
+import me.DMan16.AxStats.AxStats;
 
 public enum ArmorType {
 	BRONZE("LEATHER",
@@ -222,12 +226,29 @@ public enum ArmorType {
 		return strength;
 	}
 	
+	public AxStat[] getStats(ArmorSlot slot) {
+		List<AxStat> stats = new ArrayList<AxStat>();
+		int defense = getDefense(slot);
+		int toughness = getToughness(slot);
+		int stamina = getStamina(slot);
+		int strength = getStrength(slot);
+		if (defense != 0) stats.add(new AxStat(AxStats.defense(),defense,null,false,slot.slot));
+		if (toughness != 0) stats.add(new AxStat(AxStats.toughness(),toughness,null,false,slot.slot));
+		if (stamina != 0) stats.add(new AxStat(AxStats.stamina(),stamina,null,false,slot.slot));
+		if (strength != 0) stats.add(new AxStat(AxStats.strength(),strength,null,false,slot.slot));
+		return stats.toArray(new AxStat[0]);
+	}
+	
 	/**
 	 * 0 = Unbreakable
 	 */
 	public int getMaxDurability(ArmorSlot slot) {
-		if (tier < UnbreakableMaxTier) return 0;
+		if (isUnbreakable()) return 0;
 		return durability * mults[slot.ordinal()];
+	}
+	
+	public boolean isUnbreakable() {
+		return tier < UnbreakableMaxTier;
 	}
 	
 	public int getTier(ArmorSlot slot) {
