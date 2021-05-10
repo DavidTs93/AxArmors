@@ -1,8 +1,14 @@
-package me.DMan16.AxArmors.Listeners;
+package me.DMan16.AxArmors;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import me.Aldreda.AxUtils.Classes.Listener;
+import me.Aldreda.AxUtils.Events.ArmorEquipEvent;
+import me.Aldreda.AxUtils.Utils.Utils;
+import me.DMan16.AxItems.Items.AxItem;
+import me.DMan16.AxItems.Restrictions.ItemRestrictedEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -21,18 +27,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.Aldreda.AxUtils.Classes.Listener;
-import me.Aldreda.AxUtils.Events.ArmorEquipEvent;
-import me.Aldreda.AxUtils.Utils.Utils;
-import me.DMan16.AxArmors.AxArmors;
-import me.DMan16.AxArmors.Armors.ArmorSlot;
-import me.DMan16.AxArmors.Armors.ArmorType;
-import me.DMan16.AxArmors.Armors.AxArmor;
-import me.DMan16.AxItems.Items.AxItem;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArmorListener extends Listener {
 	
@@ -43,34 +39,34 @@ public class ArmorListener extends Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void customDurabilityEvent(PlayerItemDamageEvent event) {
 		int dmg = event.getDamage();
-		if (event.isCancelled() || dmg <= 0 || event.getPlayer() == null) return;
+		Player player = event.getPlayer();
+		if (event.isCancelled() || dmg <= 0 || player == null) return;
 		ItemStack item = event.getItem();
 		AxArmor armor = AxArmor.getAxArmor(item);
 		if (armor == null) return;
 		event.setCancelled(true);
 		event.setDamage(0);
 		EquipmentSlot slot = null;
-		if (item.equals(event.getPlayer().getInventory().getHelmet())) slot = EquipmentSlot.HEAD;
-		else if (item.equals(event.getPlayer().getInventory().getChestplate())) slot = EquipmentSlot.CHEST;
-		else if (item.equals(event.getPlayer().getInventory().getLeggings())) slot = EquipmentSlot.LEGS;
-		else if (item.equals(event.getPlayer().getInventory().getBoots())) slot = EquipmentSlot.FEET;
+		if (item.equals(player.getInventory().getHelmet())) slot = EquipmentSlot.HEAD;
+		else if (item.equals(player.getInventory().getChestplate())) slot = EquipmentSlot.CHEST;
+		else if (item.equals(player.getInventory().getLeggings())) slot = EquipmentSlot.LEGS;
+		else if (item.equals(player.getInventory().getBoots())) slot = EquipmentSlot.FEET;
 		if (slot == null) return;
 		armor.damage(dmg);
 		if (armor.isBroken()) {
-			event.getPlayer().playSound(event.getPlayer().getLocation(),Sound.ENTITY_ITEM_BREAK,1,1);
-			Item droppedItem = Utils.givePlayer(event.getPlayer(),armor.item(),false);
-			event.getPlayer().getInventory().setItem(slot,droppedItem != null ? null : armor.item());
+			player.playSound(player.getLocation(),Sound.ENTITY_ITEM_BREAK,1,1);
+			Item droppedItem = Utils.givePlayer(player,armor.item(player),false);
+			player.getInventory().setItem(slot,droppedItem != null ? null : armor.item(player));
 			if (droppedItem != null) droppedItem.remove();
-		} else event.getPlayer().getInventory().setItem(slot,armor.item());
+		} else player.getInventory().setItem(slot,armor.item(player));
 	}
 	
 	@EventHandler(ignoreCancelled = true)
-	public void disableEquipArmorsEvent(me.DMan16.AxItems.Restrictions.ItemRestrictedEvent event) {
+	public void disableEquipArmorsEvent(ItemRestrictedEvent event) {
 		if (event.isCancelled()) return;
 		AxArmor armor = AxArmor.getAxArmor(event.item);
 		if (armor == null || !armor.isBroken()) return;
-		event.setCancelMSG(Component.translatable("item.aldreda.armor.broken_no_equip").color(TextColor.color(NamedTextColor.RED)).decoration(TextDecoration.ITALIC,
-				false));
+		event.setCancelMSG(Component.translatable("item.aldreda.armor.broken_no_equip").color(TextColor.color(NamedTextColor.RED)).decoration(TextDecoration.ITALIC,false));
 		event.setCancelled(true);
 	}
 	
@@ -92,7 +88,7 @@ public class ArmorListener extends Listener {
 		new BukkitRunnable() {
 			public void run() {
 				try {
-					event.getClickedInventory().setItem(event.getSlot(),AxArmor.getLegalAxArmor(item).item());
+					event.getClickedInventory().setItem(event.getSlot(),AxArmor.getLegalAxArmor(item).item(player));
 				} catch (Exception e) {
 					event.getClickedInventory().setItem(event.getSlot(),null);
 				}
@@ -108,7 +104,7 @@ public class ArmorListener extends Listener {
 		if (Utils.isNull(item)) return;
 		if (ArmorType.isArmor(item.getType()) && AxArmor.getAxArmor(item) == null) {
 			try {
-				drop.setItemStack(AxArmor.getLegalAxArmor(item).item());
+				drop.setItemStack(AxArmor.getLegalAxArmor(item).item(event.getPlayer()));
 			} catch (Exception e) {
 				drop.remove();
 			}
@@ -125,7 +121,7 @@ public class ArmorListener extends Listener {
 			if (Utils.isNull(item)) continue;
 			if (ArmorType.isArmor(item.getType()) && AxArmor.getAxArmor(item) == null) {
 				try {
-					loot.add(AxArmor.getLegalAxArmor(item).item());
+					loot.add(AxArmor.getLegalAxArmor(item).item(null));
 				} catch (Exception e) {}
 			}
 		}
@@ -160,7 +156,7 @@ public class ArmorListener extends Listener {
 				if (Utils.isNull(result) || (Utils.isNull(item1) && Utils.isNull(item2))) return;
 				AxArmor armor = AxArmor.getAxArmor(result);
 				if (armor == null) return;
-				if (Utils.isNull(item1) || Utils.isNull(item2)) event.getInventory().setItem(2,armor.item());
+				if (Utils.isNull(item1) || Utils.isNull(item2)) event.getInventory().setItem(2,armor.item((Player) event.getWhoClicked()));
 			}
 		}.runTask(AxArmors.getInstance());
 	}
@@ -178,13 +174,13 @@ public class ArmorListener extends Listener {
 				if (armor1 == null) return;
 				ItemStack item2 = event.getInventory().getItem(1);
 				if (Utils.isNull(item2)) {
-					if (armor != null) event.getInventory().setItem(2,armor.item());
+					if (armor != null) event.getInventory().setItem(2,armor.item(player));
 				} else if (armor.repairItemKey != null && armor.repairItemKey.equals(AxItem.getAxItem(item2).key())) {
 					int amount = armor1.itemMaterialAmountToFull();
 					amount = Math.min(amount,item2.getAmount());
 					if (amount <= 0) return;
 					armor.repairWithMaterial(amount);
-					event.getInventory().setItem(2,armor.item());
+					event.getInventory().setItem(2,armor.item(player));
 					player.updateInventory();
 				}
 			}

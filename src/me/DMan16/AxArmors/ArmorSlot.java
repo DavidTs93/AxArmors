@@ -1,4 +1,4 @@
-package me.DMan16.AxArmors.Armors;
+package me.DMan16.AxArmors;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.EquipmentSlot;

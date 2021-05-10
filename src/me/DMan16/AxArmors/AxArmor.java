@@ -1,4 +1,4 @@
-package me.DMan16.AxArmors.Armors;
+package me.DMan16.AxArmors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +11,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -46,9 +47,9 @@ public class AxArmor extends AxItem {
 	protected boolean broken;
 	
 	public AxArmor(ArmorType type, ArmorSlot slot) {
-		super(Utils.makeItem(type.getMaterial(slot),null,ItemFlag.values()),													// item
+		super(Utils.makeItem(type.getMaterial(slot),null,ItemFlag.values()),												// item
 				defaultKey(type,slot),																							// key
-				Component.translatable(type.getTranslatableName(slot)).decoration(TextDecoration.ITALIC,false),					// name
+				Component.translatable(type.getTranslatableName(slot)).decoration(TextDecoration.ITALIC,false),			// name
 				null, /* topLore */ null, /* bottomLore */
 				/*(info) -> {
 					info.second().getPlayer().sendMessage(Component.text(Utils.chatColors("&bEquip ")).append(info.first().name().hoverEvent(
@@ -71,19 +72,12 @@ public class AxArmor extends AxItem {
 		this.broken = false;
 		PersistentDataContainerSet(typeKey,PersistentDataType.STRING,type.name());
 		if (this.maxDurability <= 0) unbreakable(true);
+		updateDurability();
 	}
 
 	public static String defaultKey(ArmorType type, ArmorSlot slot) {
 		return ("armor_" + Objects.requireNonNull(type.name()) + "_" + Objects.requireNonNull(slot).name()).toLowerCase();
 	}
-	
-	/*private int getDefenseBonus() {
-		return defense;
-	}
-	
-	private int getToughnessBonus() {
-		return toughness;
-	}*/
 
 	public boolean isBroken() {
 		return broken;
@@ -94,9 +88,9 @@ public class AxArmor extends AxItem {
 	}
 	
 	@Override
-	public ItemStack item() {
-		if (broken) return brokenArmor();
-		return super.item();
+	public ItemStack item(Player player) {
+		if (broken) return brokenArmor(player);
+		return super.item(player);
 	}
 	
 	// !!!
@@ -117,16 +111,6 @@ public class AxArmor extends AxItem {
 		belowBottomLore.add(durabilityLine);
 		return belowBottomLore;
 	}
-	
-	/*protected AxArmor updateAttribute() {
-		addAttributes(Pair.of(Attribute.GENERIC_MOVEMENT_SPEED, new AttributeModifier(UUID.randomUUID(),attributeKey,0,Operation.ADD_NUMBER,
-				EquipmentSlot.OFF_HAND)));
-		if (stamina != 0) addAttributes(Pair.of(Attribute.GENERIC_MAX_HEALTH, new AttributeModifier(UUID.randomUUID(),attributeKey,getHealthBonus(),
-				Operation.ADD_NUMBER,slot.slot)));
-		if (strength != 0) addAttributes(Pair.of(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(UUID.randomUUID(),attributeKey,getStrengthBonus(),
-				Operation.ADD_NUMBER,slot.slot)));
-		return this;
-	}*/
 	
 	protected AxArmor updateDurability() {
 		durability = Math.max(Math.min(durability,maxDurability),0);
@@ -162,7 +146,7 @@ public class AxArmor extends AxItem {
 		return this;
 	}
 	
-	protected ItemStack brokenArmor() {
+	protected ItemStack brokenArmor(Player player) {
 		Component name = name().append(Component.text(" (").append(Component.translatable(ArmorType.translateItemBase +
 				"broken")).append(Component.text(")")).decoration(TextDecoration.ITALIC,false));
 		ItemStack item = Utils.makeItem(type.getMaterial(slot),name,ItemFlag.values());
@@ -170,7 +154,7 @@ public class AxArmor extends AxItem {
 		meta.setUnbreakable(true);
 		meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED, new AttributeModifier(UUID.randomUUID(),attributeKey,0,Operation.ADD_NUMBER,
 				EquipmentSlot.OFF_HAND));
-		meta.getPersistentDataContainer().set(brokenKey,PersistentDataType.STRING,Utils.ObjectToBase64(super.item()));
+		meta.getPersistentDataContainer().set(brokenKey,PersistentDataType.STRING,Utils.ObjectToBase64(super.item(player)));
 		item.setItemMeta(meta);
 		return Restrictions.Unequippable.add(item);
 	}
@@ -188,7 +172,7 @@ public class AxArmor extends AxItem {
 			if (armor.maxDurability > 0)
 				armor.damage(armor.maxDurability - item.getItemMeta().getPersistentDataContainer().get(durabilityKey,PersistentDataType.INTEGER));
 			return armor;
-		} catch (Exception e) {}
+		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
 	
