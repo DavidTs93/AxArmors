@@ -22,34 +22,28 @@ public enum ArmorType {
 	ADAMANT("DIAMOND",8,2,2,0,0,5,null,false),
 	PRISMARINE("DIAMOND",7,0,0,6,10,6,"PRISMARINE",false),
 	COBALT("NETHERITE",9,4,4,0,15,6,"LAPIS_LAZULI",false),
-	MAGMA("NETHERITE",8,0,0,8,15,7,"MAGMA_BLOCK",false,TextColor.color(0xff4e01),makeStatsMap(Arrays.asList(1,2,3,4),
+	MAGMA("NETHERITE",8,0,0,8,15,7,"MAGMA_BLOCK",false,TextColor.color(0xff4e01),makeStatsMap(Arrays.asList(2,3,4),
 			Arrays.asList(Arrays.asList(new AxStat(AxStats.strength(),1,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.strength(),1,null,false,EquipSlot.SET)),
-					Arrays.asList(new AxStat(AxStats.strength(),1,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.stamina(),2,null,false,EquipSlot.SET))))),
-	EMERALD("DIAMOND",10,6,6,0,20,7,"EMERALD",false,TextColor.color(0x50c878),makeStatsMap(Arrays.asList(1,2,3,4),
+	EMERALD("DIAMOND",10,6,6,0,20,7,"EMERALD",false,TextColor.color(0x50c878),makeStatsMap(Arrays.asList(2,3,4),
 			Arrays.asList(Arrays.asList(new AxStat(AxStats.stamina(),2,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.stamina(),2,null,false,EquipSlot.SET)),
-					Arrays.asList(new AxStat(AxStats.stamina(),2,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.strength(),1,null,false,EquipSlot.SET))))),
-	DIAMOND("DIAMOND",9,0,0,10,25,8,"DIAMOND",true,TextColor.color(0xb9f2ff),makeStatsMap(Arrays.asList(1,2,3,4),
+	DIAMOND("DIAMOND",9,0,0,10,25,8,"DIAMOND",true,TextColor.color(0xb9f2ff),makeStatsMap(Arrays.asList(2,3,4),
 			Arrays.asList(Arrays.asList(new AxStat(AxStats.strength(),2,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.strength(),2,null,false,EquipSlot.SET)),
-					Arrays.asList(new AxStat(AxStats.strength(),2,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.stamina(),4,null,false,EquipSlot.SET))))),
-	OBSIDIAN("NETHERITE",11,8,8,0,30,9,"OBSIDIAN",false,TextColor.color(0x343637),makeStatsMap(Arrays.asList(1,2,3,4),
+	OBSIDIAN("NETHERITE",11,8,8,0,30,9,"OBSIDIAN",false,TextColor.color(0x343637),makeStatsMap(Arrays.asList(2,3,4),
 			Arrays.asList(Arrays.asList(new AxStat(AxStats.stamina(),4,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.stamina(),4,null,false,EquipSlot.SET)),
-					Arrays.asList(new AxStat(AxStats.stamina(),4,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.strength(),2,null,false,EquipSlot.SET))))),
-	NETHERITE("NETHERITE",10,0,0,12,35,9,"NETHERITE_INGOT",true,TextColor.color(0x4f4f4f),makeStatsMap(Arrays.asList(1,2,3,4),
+	NETHERITE("NETHERITE",10,0,0,12,35,9,"NETHERITE_INGOT",true,TextColor.color(0x4f4f4f),makeStatsMap(Arrays.asList(2,3,4),
 			Arrays.asList(Arrays.asList(new AxStat(AxStats.strength(),3,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.strength(),3,null,false,EquipSlot.SET)),
-					Arrays.asList(new AxStat(AxStats.strength(),3,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.stamina(),6,null,false,EquipSlot.SET))))),
-	WOLFRAM("IRON",12,10,10,0,40,9,"NETHERITE_INGOT",false,TextColor.color(0xc0c0c0),makeStatsMap(Arrays.asList(1,2,3,4),
+	WOLFRAM("IRON",12,10,10,0,40,9,"NETHERITE_INGOT",false,TextColor.color(0xc0c0c0),makeStatsMap(Arrays.asList(2,3,4),
 			Arrays.asList(Arrays.asList(new AxStat(AxStats.stamina(),6,null,false,EquipSlot.SET)),
-					Arrays.asList(new AxStat(AxStats.stamina(),6,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.stamina(),6,null,false,EquipSlot.SET)),
 					Arrays.asList(new AxStat(AxStats.strength(),3,null,false,EquipSlot.SET)))));
 
@@ -61,8 +55,6 @@ public enum ArmorType {
 	
 	private static int[] mults = new int[] {11,16,15,13};
 	private int UnbreakableMaxTier = 7;
-	static final String translateItemBase = "item.aldreda.armor.";
-	private final String translateItemMC = "item.minecraft.";
 	
 	static {
 		try {
@@ -187,10 +179,10 @@ public enum ArmorType {
 	
 	public String getTranslatableName(ArmorSlot slot) {
 		if (slot == null) return null;
-		return ((material.equals(name()) ? translateItemMC : translateItemBase) + name() + "_" + slot.name()).toLowerCase();
+		return ((material.equals(name()) ? "item.minecraft." : "item.aldreda.armor.") + name() + "_" + slot.name()).toLowerCase();
 	}
 	
-	public boolean isOriginal() {
+	public boolean original() {
 		return original;
 	}
 }

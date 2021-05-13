@@ -17,7 +17,6 @@ public class AxArmors extends JavaPlugin {
 	
 	public void onEnable() {
 		instance = this;
-		new CommandListener();
 		new ArmorListener();
 		createArmors();
 		Utils.chatColorsLogPlugin("&fAxArmors &aloaded!");
