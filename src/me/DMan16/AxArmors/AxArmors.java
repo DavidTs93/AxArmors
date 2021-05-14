@@ -8,7 +8,6 @@ import me.DMan16.AxStats.AxStat;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -26,13 +25,11 @@ public class AxArmors extends JavaPlugin {
 		for (ArmorType type : ArmorType.values()) {
 			boolean unbreakable = type.isUnbreakable();
 			SortedMap<Integer,List<AxStat>> stats = type.getSetStats();
-			List<String> armors = unbreakable ? null : new ArrayList<String>();
 			for (ArmorSlot slot : ArmorSlot.values()) {
-				AxArmor armor = new AxArmor(type,slot);
-				armor.register();
-				if (stats != null) armors.add(armor.key());
+				AxItem armor = new AxArmor(type,slot).register();
+				if (stats != null) AxSet.addWhenPossible(type.name(),armor.key());
 			}
-			if (stats != null) new AxSet(type.name(),type.getColor(),stats,armors).register();
+			if (stats != null) new AxSet(type.name(),type.getColor(),stats).register();
 		}
 		AxItem.addDisabledVanillas(Tags.HELMETS.getMaterials());
 		AxItem.addDisabledVanillas(Tags.CHESTPLATES.getMaterials());
