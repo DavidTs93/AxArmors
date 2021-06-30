@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AxArmor extends AxItemPerishable {
-	protected final static NamespacedKey typeKey = Utils.namespacedKey("axarmor_type");
+	protected final static NamespacedKey typeKey = new NamespacedKey(AxArmors.getInstance(),"axarmor_type");
 	
 	public final ArmorType type;
 	public final int defense;
@@ -27,14 +27,8 @@ public class AxArmor extends AxItemPerishable {
 	
 	public AxArmor(ArmorType type, ArmorSlot slot) {
 		super(Utils.makeItem(type.getMaterial(slot),null,ItemFlag.values()),defaultKey(type,slot),
-				Component.translatable(type.getTranslatableName(slot)).decoration(TextDecoration.ITALIC,false),null,null,
-				/*(info) -> {
-					info.second().getPlayer().sendMessage(Component.text(Utils.chatColors("&bEquip ")).append(info.first().name().hoverEvent(
-							info.first().item().asHoverEvent())));
-				},
-				null,*/
-				Utils.joinLists(Tags.get(type.getMaterial(slot)).stream().map(tag -> tag.name()).collect(Collectors.toList()),Arrays.asList("armor",type.name(),slot.name())),
-				type.getMaxDurability(slot),type.getRepairKey(),type.original() ? type.getMaterial(slot) : null,type.getStats(slot));
+				Component.translatable(type.getTranslatableName(slot)).decoration(TextDecoration.ITALIC,false),
+				type.original() ? type.getMaterial(slot) : null,type.getMaxDurability(slot),type.getRepairKey());
 		this.type = type;
 		this.defense = type.getDefense(slot);
 		this.toughness = type.getToughness(slot);
@@ -43,6 +37,9 @@ public class AxArmor extends AxItemPerishable {
 		this.tier = type.getTier(slot);
 		this.slot = slot;
 		PersistentDataContainerSet(typeKey,PersistentDataType.STRING,type.name());
+		addKeywords(Tags.get(type.getMaterial(slot)).stream().map(tag -> tag.name()).collect(Collectors.toList()));
+		addKeywords("armor",type.name(),slot.name());
+		addStats(type.getStats(slot));
 	}
 
 	public static String defaultKey(ArmorType type, ArmorSlot slot) {
