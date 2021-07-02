@@ -53,18 +53,19 @@ public enum ArmorType {
 		return map;
 	}
 	
-	private static int[] mults = new int[] {11,16,15,13};
-	private int UnbreakableMaxTier = 7;
-	
-	static {
+	private static int[] getMults() {
 		try {
-			Class<?> EnumArmorMaterial = Class.forName("net.minecraft.server." + ReflectionUtils.version + ".EnumArmorMaterial");
+			Class<?> EnumArmorMaterial = ReflectionUtils.getClassNMS("EnumArmorMaterial","world.item");
 			Field h = EnumArmorMaterial.getDeclaredField("h");
 			h.setAccessible(true);
 			int[] multsMC = (int[]) h.get(null);
-			mults = new int[] {multsMC[3],multsMC[2],multsMC[1],multsMC[0]};
+			return new int[] {multsMC[3],multsMC[2],multsMC[1],multsMC[0]};
 		} catch (Exception e) {}
+		return new int[] {11,16,15,13};
 	}
+	
+	private static final int[] mults = getMults();
+	private static final int UnbreakableMaxTier = 7;
 	
 	private final String material;
 	private final int defense;
